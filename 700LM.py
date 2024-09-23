@@ -75,12 +75,14 @@ def modify_file(filename, new_heading):
 
 if __name__ == "__main__":
     filename = 'C:/Users/dan.hov/Documents/Python filer/Postpost prossesor/fil.md'
+    filename = r'P:\Produksjon\python\test\fil.md'
     directory_path = r'P:\Produksjon\CNCEdit\Programmer\2103 PUMA 700L LM'  
     first_available_number = find_first_available_number(directory_path)
     print("Første tilgjengelige nummer etter 1000 er:", first_available_number)
 
     # Filen du ønsker å endre
     filename = 'C:/Users/dan.hov/Documents/Python filer/Postpost prossesor/fil.md'
+    filename = r'P:\Produksjon\python\test\fil.md'
     modify_file(filename, first_available_number)
     print(f"Endret heading i {filename} til O{first_available_number}.")
 
