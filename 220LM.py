@@ -1,5 +1,6 @@
 import os
 import re
+import math
 
 def find_first_available_number(directory):
     files = os.listdir(directory)
@@ -10,6 +11,27 @@ def find_first_available_number(directory):
     first_available_number = next((num for num in range(1001, max(numbers) + 2) if num not in numbers), None)
     return first_available_number
 
+def find_largest_coordinates(content):
+    x_values = re.findall(r'X(-?\d+\.?\d*)', content)  # Finner alle X-verdier
+    z_values = re.findall(r'Z(-?\d+\.?\d*)', content)  # Finner alle Z-verdier
+
+    if x_values:
+        largest_x = max(float(x) for x in x_values)  # Finn største X-verdi
+    else:
+        largest_x = 0.0
+
+    if z_values:
+        largest_z = max(abs(float(z)) for z in z_values)  # Finn største Z-verdi (tar absoluttverdien)
+    else:
+        largest_z = 0.0
+
+    rounded_x = math.ceil(largest_x)  # Runder opp X
+    rounded_z = math.ceil(largest_z)  # Runder opp absoluttverdien av Z
+
+    return rounded_x, rounded_z
+
+
+
 def modify_file(filename, new_heading):
     with open(filename, 'r') as file:
         content = file.read()
@@ -19,7 +41,12 @@ def modify_file(filename, new_heading):
              "T1300", "T1400", "T1500", "T1600", "T1700", "T1800", "T1900", "T2000", "T2100", "T2200", "T2300", "T2400")
     for item in list1:
         content = content.replace(item, "G30 W0.")
- 
+    
+    # Finn største X- og Z-verdi
+    rounded_x, rounded_z = find_largest_coordinates(content)
+
+    # Legg til "G1901 D[rounded_x] K2. L[rounded_z] E2." etter linjen "G40 G80 G99"
+    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z}. E2.\n', content)
 
     # Endringer for fresing
     blocks = content.split('\n\n')  
