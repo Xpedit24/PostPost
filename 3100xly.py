@@ -29,12 +29,6 @@ def modify_file(filename, new_heading):
         content = content.replace(item, "G65 P9029 A50.")
         
         # Endringer for fresing
-    #blocks = content.split('\n\n')  
-    #for i, block in enumerate(blocks):
-        #if 'P12' in block:
-            #block = block.replace('M03', 'M04')    
-            #blocks[i] = block
-    #content = '\n\n'.join(blocks)
     blocks = content.split('\n\n')  
     for i, block in enumerate(blocks):
         if 'P12' in block:
