@@ -35,6 +35,12 @@ def modify_file(filename, new_heading):
             #block = block.replace('M03', 'M04')    
             #blocks[i] = block
     #content = '\n\n'.join(blocks)
+    blocks = content.split('\n\n')  
+    for i, block in enumerate(blocks):
+        if 'P12' in block:
+            block = block.replace('M03', 'M04')    
+            blocks[i] = block
+    content = '\n\n'.join(blocks)
 
     # Erstatter de første seks linjene annet
     lines = content.split('\n')
