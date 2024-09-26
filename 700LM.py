@@ -74,7 +74,7 @@ def modify_file(filename, new_heading):
     rounded_x, rounded_z = find_largest_coordinates(content)
 
     # Legg til "G1901 D[rounded_x] K2. L[rounded_z] E2." etter linjen "G40 G80 G99"
-    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z + 10}. E2.\n', content)    
+    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z + 10}. E2.\nM42\n', content)    
     
     # Erstatter de første seks linjene annet
     lines = content.split('\n')
