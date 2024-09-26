@@ -46,7 +46,7 @@ def modify_file(filename, new_heading):
     content = re.sub(r'\bM277 \(CHAMFERING ON\)\n', '', content)  
     content = re.sub(r'M289 \(SELECT C1 CLAMP CONTROL\)\n', '', content)
     content = re.sub(r'M289 \(SELECT C1 CLAMP CONTROL\)\n', '', content)
-    content = re.sub(r'M24 \(START CHIP CONVEYOR\)\n', 'M43', content) 
+    content = re.sub(r'M24 \(START CHIP CONVEYOR\)\n', '', content) 
     content = re.sub(r'M25 \(STOP CHIP CONVEYOR\)\n', '', content)
     content = re.sub(r'M5 P11\n', '', content)
 #    content = re.sub(r'G00 G28 U0\. V0\.', 'G00 X300.', content)
@@ -61,7 +61,7 @@ def modify_file(filename, new_heading):
     rounded_x, rounded_z = find_largest_coordinates(content)
 
     # Legg til "G1901 D[rounded_x] K2. L[rounded_z] E2." etter linjen "G40 G80 G99"
-    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z + 10}. E2.\nM42\n', content)
+    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z + 10}. E2.\nM43\n', content)
 
     # Legg til M24 etter hver T uten å fjerne kommentarer
     content = add_m24_after_tool_change(content)
