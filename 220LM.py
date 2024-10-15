@@ -31,7 +31,6 @@ def find_largest_coordinates(content):
     return rounded_x, rounded_z
 
 
-
 def modify_file(filename, new_heading):
     with open(filename, 'r') as file:
         content = file.read()
@@ -56,7 +55,6 @@ def modify_file(filename, new_heading):
             block = block.replace('M05', 'M35')      
             blocks[i] = block
     content = '\n\n'.join(blocks)
-
 
 
     # Ulike ting som skal fjernes 
@@ -104,5 +102,3 @@ if __name__ == "__main__":
     filename = r'fil.md'
     modify_file(filename, first_available_number)
     print(f"Endret heading i {filename} til O{first_available_number}.")
-
-#HI
