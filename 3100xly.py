@@ -36,9 +36,6 @@ def modify_file(filename, new_heading):
     with open(filename, 'r') as file:
         content = file.read()
 
- 
-   # Finn strengen "G00 G28 U0. V0." og legg til "GOO G30 P3 W0." under den
-    #content = re.sub(r'(G00 G28 U0\. V0\.)\n', r'\1\nG00 G30 P3 W0.\n', content)
     content = re.sub(r'\bM278 \(CHAMFERING OFF\)\n', '', content)
     content = re.sub(r'\bM277 \(CHAMFERING ON\)\n', '', content)  
     content = re.sub(r'M289 \(SELECT C1 CLAMP CONTROL\)\n', '', content)
@@ -48,7 +45,7 @@ def modify_file(filename, new_heading):
     list1 = ("T0100", "T0200", "T0300", "T0400", "T0500", "T0600", "T0700", "T0800", "T0900", "T1000", "T1100", "T1200", 
              "T1300", "T1400", "T1500", "T1600", "T1700", "T1800", "T1900", "T2000", "T2100", "T2200", "T2300", "T2400")
     for item in list1:
-        content = content.replace(item, "G65 P9029 A50.")
+        content = content.replace(item, "G65 P9029 A50. B1.")
 
     # Finn største X- og Z-verdi
     rounded_x, rounded_z = find_largest_coordinates(content)
@@ -73,16 +70,6 @@ def modify_file(filename, new_heading):
     with open(filename, 'w') as file:
         file.write(content)
 
-
-    # Fjerner linjen etter (OPERATION)
- #   i = 1
- #   while i < len(lines):
- #       line = lines[i].strip()
- #       if line.startswith('(OPERATION'):
- #           next_line_index = i + 1
- #           if next_line_index < len(lines) and ('G00 G28 U0. V0.' in lines[next_line_index] or 'G01 G28 U0. V0.' in lines[next_line_index]):
- #               del lines[next_line_index:next_line_index+2]
-#        i += 1
 
     # Lagrer endringene
     with open(filename, 'w') as file:

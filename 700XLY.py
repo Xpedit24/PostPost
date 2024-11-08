@@ -48,6 +48,7 @@ def modify_file(filename, new_heading):
     content = re.sub(r'M289 \(SELECT C1 CLAMP CONTROL\)\n', '', content)
     content = re.sub(r'M24 \(START CHIP CONVEYOR\)\n', '', content) 
     content = re.sub(r'M25 \(STOP CHIP CONVEYOR\)\n', '', content)
+    content = re.sub(r'M05 P11\n', '', content)
     content = re.sub(r'M5 P11\n', '', content)
 #    content = re.sub(r'G00 G28 U0\. V0\.', 'G00 X300.', content)
 
