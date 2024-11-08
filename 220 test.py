@@ -30,48 +30,65 @@ def find_largest_coordinates(content):
 
     return rounded_x, rounded_z
 
-def find_extreme_coordinates_within_blocks(content):
-    # Finner alle blokker som starter med T-kode og slutter med M99 eller M30
-    blocks = re.findall(r'(T\d{4}.*?)(?:M01|M30)', content, re.DOTALL)
+def find_tool_ranges(content):
+    lines = content.splitlines()
+    tool_ranges = []
+    current_tool_start = None
+
+    # Finn søkeområder (fra T-kode til G30 U0.)
+    for i, line in enumerate(lines):
+        if re.search(r'(?<!\()\bT\d{4}\b(?!\))', line):  # Finn T-kode utenfor parenteser
+            current_tool_start = i
+        elif 'G30 U0.' in line and current_tool_start is not None:
+            # Lagre start- og sluttindeks for området
+            tool_ranges.append((current_tool_start, i))
+            current_tool_start = None
+
+    return tool_ranges
+
+def insert_comment_before_operation(content, tool_ranges):
+    lines = content.splitlines()
+    new_lines = []
+
+    last_insert_index = 0  # To keep track of where we left off in new_lines
+
+    for start, end in tool_ranges:
+        x_max, x_min = float('-inf'), float('inf')
+        z_max, z_min = float('-inf'), float('inf')
+
+        # Calculate max and min for X and Z within the tool range
+        for i in range(start, end + 1):
+            line = lines[i]
+            x_match = re.search(r'X([-\d.]+)', line)
+            z_match = re.search(r'Z([-\d.]+)', line)
+
+            if x_match:
+                x_value = float(x_match.group(1))
+                x_max, x_min = max(x_max, x_value), min(x_min, x_value)
+
+            if z_match:
+                z_value = float(z_match.group(1))
+                z_max, z_min = max(z_max, z_value), min(z_min, z_value)
+
+        comment = f"(Extreme X: Max = {x_max}, Min = {x_min}, Z: Max = {z_max}, Min = {z_min})"
+        
+        # Append lines up to 4 lines before start if possible
+        insertion_point = max(0, start - 3)
+        new_lines.extend(lines[last_insert_index:insertion_point])  # Add lines before insertion point
+        new_lines.append(comment)  # Insert the comment at this calculated position
+        new_lines.extend(lines[insertion_point:start])  # Add the lines leading up to the T code
+
+        # Add lines from start to end as they are
+        new_lines.extend(lines[start:end + 1])
+        last_insert_index = end + 1  # Update the last processed line index
+
+    # Add remaining lines after the last range
+    new_lines.extend(lines[last_insert_index:])
     
-    # Samler ekstremverdier for hver blokk
-    max_x = min_x = max_z = min_z = None
+    new_content = '\n'.join(new_lines)
     
-    for block in blocks:
-        x_values = re.findall(r'X(-?\d+\.?\d*)', block)
-        z_values = re.findall(r'Z(-?\d+\.?\d*)', block)
+    return new_content
 
-        if x_values:
-            x_values = [float(x) for x in x_values]
-            block_max_x = max(x_values)
-            block_min_x = min(x_values)
-            if max_x is None or block_max_x > max_x:
-                max_x = block_max_x
-            if min_x is None or block_min_x < min_x:
-                min_x = block_min_x
-
-        if z_values:
-            z_values = [float(z) for z in z_values]
-            block_max_z = max(z_values)
-            block_min_z = min(z_values)
-            if max_z is None or block_max_z > max_z:
-                max_z = block_max_z
-            if min_z is None or block_min_z < min_z:
-                min_z = block_min_z
-
-    # Returnerer ekstremverdiene og en formateringsklar kommentar
-    if max_x is None:
-        max_x = 0.0
-    if min_x is None:
-        min_x = 0.0
-    if max_z is None:
-        max_z = 0.0
-    if min_z is None:
-        min_z = 0.0
-
-    comment = (f"(MAX X: {max_x}, MIN X: {min_x})\n(MAX Z: {max_z}, MIN Z: {min_z})")
-    
-    return max_x, min_x, max_z, min_z, comment
 
 
 def modify_file(filename, new_heading):
@@ -84,13 +101,11 @@ def modify_file(filename, new_heading):
     for item in list1:
         content = content.replace(item, "G30 W0.")
     
+    # Finn største X- og Z-verdi
+    rounded_x, rounded_z = find_largest_coordinates(content)
 
- # Finn største positive og negative X- og Z-verdi samt kommentar
-    max_x, min_x, max_z, min_z, comment = find_extreme_coordinates_within_blocks(content)
-
-
-# Legg til "G1901 D[max_x] K2. L[max_z] E2." etter linjen "G40 G80 G99"
-    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{max_x}. K2. L{max_z + 10}. E2.\n', content)
+    # Legg til "G1901 D[rounded_x] K2. L[rounded_z] E2." etter linjen "G40 G80 G99"
+    content = re.sub(r'(G40 G80 G99)', rf'\1\nG1901 D{rounded_x}. K2. L{rounded_z + 10}. E2.\n', content)
 
     # Endringer for fresing
     blocks = content.split('\n\n')  
@@ -100,6 +115,7 @@ def modify_file(filename, new_heading):
             block = block.replace('M05', 'M35')      
             blocks[i] = block
     content = '\n\n'.join(blocks)
+
 
     # Ulike ting som skal fjernes 
     content = re.sub(r'\bP11\b', '', content)
@@ -117,11 +133,15 @@ def modify_file(filename, new_heading):
     content = re.sub(r'G00 G28 U0\. V0\.', 'G30 U0.', content)
     content = re.sub(r'G28 U0\. V0\.', 'G30 U0.', content)
 
+    
+    # Hent søkeområdene
+    tool_ranges = find_tool_ranges(content)
+    content = insert_comment_before_operation(content, tool_ranges)  # Make sure to use updated content
+
     # Erstatter de første seks linjene annet
     lines = content.split('\n')
     lines[:6] = ["%", f"O{new_heading} ()",]
-    print(comment)
-
+    
     # Fjerner linjen etter (OPERATION)
     i = 1
     while i < len(lines):
@@ -134,15 +154,12 @@ def modify_file(filename, new_heading):
                 del lines[next_line_index:next_line_index+2]
         i += 1
 
-    # Legg til kommentaren etter "(OPERATION #)" hvis neste linje er "G54"
-    for i in range(len(lines) - 1):
-        if lines[i].startswith('(OPERATION') and lines[i+1].strip() == 'G54':
-            lines.insert(i+2, comment)  # Legg til kommentaren etter linjen med G54
 
 
     # Lagrer endringene
     with open(filename, 'w') as file:
         file.write('\n'.join(lines))
+
 
 if __name__ == "__main__":
     filename = r'fil.md'
