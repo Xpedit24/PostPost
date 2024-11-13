@@ -1,6 +1,6 @@
 import os
 import re
-
+#
 def find_first_available_number(directory):
     files = os.listdir(directory)
     numbers = [int(filename.split('.')[0]) for filename in files if filename.split('.')[0].isdigit()]

@@ -9,7 +9,7 @@ def find_first_available_number(directory):
         return 1001 
     first_available_number = next((num for num in range(1001, max(numbers) + 2) if num not in numbers), None)
     return first_available_number
-
+#
 
 def find_tool_ranges(content):
     lines = content.splitlines()
