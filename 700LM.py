@@ -73,7 +73,7 @@ def insert_comment_before_operation(content, tool_ranges):
                 z_max, z_min = max(z_max, z_value), min(z_min, z_value)
 
         # Form the comment with the calculated extreme values
-        comment = f"(Extreme X: Max = {x_max}, Min = {x_min}, Z: Max = {z_max}, Min = {z_min})"
+        comment = f"(X: MAX = {x_max}, MIN = {x_min})\n(Z: MAX = {z_max}, MIN = {z_min})"
         
         # Insert the comment directly before the operation, 4 lines above
         insertion_point = max(0, start - 3)
