@@ -99,9 +99,6 @@ def insert_comment_before_operation(content, tool_ranges):
     return new_content
 
 
-
-
-
 def modify_file(filename, new_heading):
     with open(filename, 'r') as file:
         content = file.read()
