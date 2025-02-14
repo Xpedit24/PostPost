@@ -20,6 +20,9 @@ def find_largest_coordinates(content):
     x_values = re.findall(r'X(-?\d+\.?\d*)', content)  # Finner alle X-verdier
     z_values = re.findall(r'Z(-?\d+\.?\d*)', content)  # Finner alle Z-verdier
 
+    # Fjern X191016 fra listen over X-verdier
+    x_values = [x for x in x_values if x != "191016"]
+
     if x_values:
         largest_x = max(float(x) for x in x_values)  # Finn største X-verdi
     else:

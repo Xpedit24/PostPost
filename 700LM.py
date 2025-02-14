@@ -117,6 +117,7 @@ def modify_file(filename, new_heading):
     content = re.sub(r'\bP11\b', '', content)
     content = re.sub(r'\bP12\b', '', content)
     content = re.sub(r'\bM34\n', '', content)
+    content = re.sub(r'\bG17\n', '', content)
     content = re.sub(r'Y0\.', '', content)
     content = re.sub(r'\bM278 \(CHAMFERING OFF\)\n', '', content)
     content = re.sub(r'\bM277 \(CHAMFERING ON\)\n', '', content)  
@@ -124,8 +125,6 @@ def modify_file(filename, new_heading):
     content = re.sub(r'M289 \(SELECT C1 CLAMP CONTROL\)\n', '', content)
     content = re.sub(r'M24 \(START CHIP CONVEYOR\)\n', '', content) 
     content = re.sub(r'M25 \(STOP CHIP CONVEYOR\)\n', '', content)
-    content = re.sub(r'M08', 'M21', content)
-    content = re.sub(r'M8', 'M21', content)
     content = re.sub(r'G00 G28 U0\. V0\.', 'G28 U0.', content)
     content = re.sub(r'G28 U0\. V0\.', 'G28 U0.', content)
 
@@ -159,17 +158,6 @@ def modify_file(filename, new_heading):
     with open(filename, 'w') as file:
         file.write(content)
 
-
-
-    # Fjerner linjen etter (OPERATION)
-#    i = 1
-#    while i < len(lines):
-#        line = lines[i].strip()
-#        if line.startswith('(OPERATION'):
-#            next_line_index = i + 1
-#            if next_line_index < len(lines) and ('G00 G28 U0. V0.' in lines[next_line_index] or 'G01 G28 U0. V0.' in lines[next_line_index]):
-#                del lines[next_line_index:next_line_index+2]
-#        i += 1
 
     # Lagrer endringene
     with open(filename, 'w') as file:
