@@ -106,12 +106,30 @@ def modify_file(filename, new_heading):
 
     first_replacement = True  # Flag to check if it's the first replacement
     for item in list1:
-        if first_replacement:
+        if first_replacement == True:
             content = content.replace(item, "G65 P9029 A50. B1.")
             first_replacement = False  # After the first replacement, set flag to False
         else:
             content = content.replace(item, "G65 P9029 A50. B0.")
     
+    first_g65_replacement = True  # Flag for første forekomst
+    updated_lines = []
+
+    # Gå gjennom linjene én etter én
+    for line in content.splitlines():
+        if "G65 P9029 A50. B1." in line or "G65 P9029 A50. B0." in line:
+            if first_g65_replacement:
+                # Første funn erstattes alltid med B1.
+                line = "G65 P9029 A50. B1."
+                first_g65_replacement = False  # Neste gang skal det være B0.
+            else:
+                # Alle senere funn blir B0.
+                line = "G65 P9029 A50. B0."
+        updated_lines.append(line)
+
+    # Oppdater innholdet etter G65-erstatningene
+    content = "\n".join(updated_lines)
+
     # Finn største X- og Z-verdi
     rounded_x, rounded_z = find_largest_coordinates(content)
 
@@ -139,17 +157,6 @@ def modify_file(filename, new_heading):
     lines = content.split('\n')
     lines[:6] = ["%", f"O{new_heading} ()",]
     content = '\n'.join(lines)
-
-    # Fjerner linjen etter (OPERATION)
-   # i = 1
-   # while i < len(lines):
-   #     line = lines[i].strip()
-   #     #print(line)
-   #     if line.startswith('(OPERATION'):
-   #         next_line_index = i + 1
-   #         if next_line_index < len(lines) and 'G00 X300.' in lines[next_line_index]:
-   #             del lines[next_line_index:next_line_index+2]
-   #     i += 1
 
     # Lagrer endringene
     with open(filename, 'w') as file:

@@ -120,6 +120,24 @@ def modify_file(filename, new_heading):
         else:
             content = content.replace(item, "G65 P9029 A50. B0.")
 
+    first_g65_replacement = True  # Flag for første forekomst
+    updated_lines = []
+
+    # Gå gjennom linjene én etter én
+    for line in content.splitlines():
+        if "G65 P9029 A50. B1." in line or "G65 P9029 A50. B0." in line:
+            if first_g65_replacement:
+                # Første funn erstattes alltid med B1.
+                line = "G65 P9029 A50. B1."
+                first_g65_replacement = False  # Neste gang skal det være B0.
+            else:
+                # Alle senere funn blir B0.
+                line = "G65 P9029 A50. B0."
+        updated_lines.append(line)
+
+    # Oppdater innholdet etter G65-erstatningene
+    content = "\n".join(updated_lines)
+
     # Finn største X- og Z-verdi
     rounded_x, rounded_z = find_largest_coordinates(content)
 
