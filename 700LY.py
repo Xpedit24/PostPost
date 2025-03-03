@@ -148,17 +148,6 @@ def modify_file(filename, new_heading):
     with open(filename, 'w') as file:
         file.write(content)
 
-
-    # Fjerner linjen etter (OPERATION)
- #   i = 1
- #   while i < len(lines):
- #       line = lines[i].strip()
- #       if line.startswith('(OPERATION'):
- #           next_line_index = i + 1
- #           if next_line_index < len(lines) and ('G00 G28 U0. V0.' in lines[next_line_index] or 'G01 G28 U0. V0.' in lines[next_line_index]):
- #               del lines[next_line_index:next_line_index+2]
- #       i += 1
-
     # Lagrer endringene
     with open(filename, 'w') as file:
         file.write('\n'.join(lines))
