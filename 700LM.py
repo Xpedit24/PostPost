@@ -104,13 +104,17 @@ def modify_file(filename, new_heading):
     with open(filename, 'r') as file:
         content = file.read()
 
-    # Endringer for fresing
+    # Deler opp innholdet i blokker
     blocks = content.split('\n\n')  
+
     for i, block in enumerate(blocks):
-        if 'P12' in block:
+        # Søker etter 'P12' som en frittstående kode, ikke inne i parenteser eller tekst
+        if re.search(r'\bP12\b', block) and not re.search(r'\(.*?P12.*?\)', block):
             block = block.replace('M03', 'M33')
             block = block.replace('M05', 'M35')      
             blocks[i] = block
+
+    # Setter sammen blokker igjen
     content = '\n\n'.join(blocks)
 
 
