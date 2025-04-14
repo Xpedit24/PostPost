@@ -99,8 +99,8 @@ def modify_file(filename, new_heading):
     content = re.sub(r'G28 U0\. V0\.', 'G00 X300.', content)
 
     # Hent søkeområdene
-    tool_ranges = find_tool_ranges(content)
-    content = insert_comment_before_operation(content, tool_ranges)  # Bruk den forenklede funksjonen
+    #tool_ranges = find_tool_ranges(content)
+    #content = insert_comment_before_operation(content, tool_ranges)  # Bruk den forenklede funksjonen
 
     # Erstatter de første seks linjene annet
     lines = content.split('\n')
