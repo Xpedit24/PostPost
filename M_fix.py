@@ -353,7 +353,7 @@ G65P6505A102.(TELLING 00X)
 N100  """
       },
     "PUMA  | skriver langs c med c akse på dia": {
-     " ": "G65P6505A0.(MELLOMROM)",
+     " ": "G65P6506A0.(MELLOMROM)",
     "A": "G65P6506A1.(A)",
     "B": "G65P6506A2.(B)",
     "C": "G65P6506A3.(C)",
