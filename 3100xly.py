@@ -1,7 +1,7 @@
 import os
 import re
 import math
-#
+# legge til M167 og M177 i gjenge sykluser
 def find_first_available_number(directory):
     files = os.listdir(directory)
     numbers = [int(filename.split('.')[0]) for filename in files if filename.split('.')[0].isdigit()]
@@ -160,10 +160,10 @@ def modify_file(filename, new_heading):
     lines = content.split('\n')
     lines[:6] = ["%", f"O{new_heading} ()"]
     content = '\n'.join(lines)
+
     # Lagrer endringene
     with open(filename, 'w') as file:
         file.write(content)
-
 
     # Lagrer endringene
     with open(filename, 'w') as file:
